@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="color-scheme" content="light" />
+    <title>ETS (Enrique's Tracking System)</title>
+    <link rel="stylesheet" href="css/app.css" />
+  </head>
+  <body>
+    <main class="app">
+      <header class="topbar">
+        <h1>ETS (Enrique's Tracking System)</h1>
+        <div class="sync-row">
+          <span id="sync-pill" class="sync-pill" data-state="offline">Not signed in</span>
+          <span id="sync-detail" class="empty"></span>
+          <button type="button" id="sign-in" class="primary hidden">Sign in with Google</button>
+          <button type="button" id="sign-out" class="hidden">Sign out</button>
+        </div>
+      </header>
+      <nav class="tabs" aria-label="Sections">
+        <button type="button" id="tab-inventory" aria-selected="true">Inventory</button>
+        <button type="button" id="tab-missing">
+          Missing <span id="miss-count">0</span>
+        </button>
+      </nav>
+
+      <div class="toolbar">
+        <button type="button" id="load-sample" class="ghost">Load sample data</button>
+        <button type="button" id="export-json">Export JSON</button>
+        <button type="button" id="export-csv">Export CSV</button>
+        <button type="button" id="import-json">Import JSON</button>
+        <input id="import-file" class="file-input" type="file" accept="application/json,.json" />
+      </div>
+
+      <section id="inventory-panel">
+        <div class="panel">
+          <h2 id="inv-form-title">Add a slot</h2>
+          <form id="inv-form">
+            <div class="form-grid">
+              <label>
+                Slot
+                <input id="inv-slot" name="slot" autocomplete="off" placeholder="Scissors 1" />
+              </label>
+              <label>
+                Catalog #
+                <input id="inv-catalog" name="catalogNumber" autocomplete="off" placeholder="EX-MAYO-014" />
+              </label>
+              <label>
+                Name
+                <input id="inv-name" name="name" autocomplete="off" placeholder="Mayo scissors" />
+              </label>
+              <label>
+                Quantity
+                <input id="inv-qty" name="quantity" type="number" min="0" step="1" value="1" />
+              </label>
+              <label class="wide">
+                Description
+                <input id="inv-desc" name="description" autocomplete="off" placeholder="Size, pattern, and use" />
+              </label>
+              <label>
+                Status
+                <select id="inv-status" name="status"></select>
+              </label>
+            </div>
+            <div class="form-actions" style="margin-top: 12px">
+              <button type="submit" id="inv-submit" class="primary">Add slot</button>
+              <button type="button" id="inv-clear">Clear form</button>
+            </div>
+            <p id="inv-message" class="message"></p>
+          </form>
+        </div>
+
+        <div class="panel">
+          <div class="filter-row">
+            <h2>Slots</h2>
+            <label class="switch">
+              <input id="available-only" type="checkbox" />
+              Status = Available
+            </label>
+          </div>
+          <div class="table-wrap">
+            <table class="inventory-table">
+              <thead>
+                <tr>
+                  <th>Slot</th>
+                  <th>Catalog #</th>
+                  <th>Name</th>
+                  <th>Description</th>
+                  <th>Quantity</th>
+                  <th>Status</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="inv-body"></tbody>
+            </table>
+          </div>
+          <p id="inv-empty" class="empty">No slots yet. Add one above, or load sample data.</p>
+        </div>
+      </section>
+
+      <section id="missing-panel" class="hidden">
+        <div class="panel">
+          <h2>Missing instruments</h2>
+          <div class="missing-top">
+            <div class="donut-wrap">
+              <svg id="donut" viewBox="0 0 148 148" aria-hidden="true"></svg>
+              <ul id="legend" class="legend"></ul>
+            </div>
+            <div id="miss-list" class="missing-list"></div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h2 id="miss-form-title">Add a missing instrument</h2>
+          <form id="miss-form">
+            <div class="form-grid">
+              <label>
+                Catalog #
+                <input id="miss-catalog" name="catalogNumber" autocomplete="off" placeholder="EX-WEIT-014" />
+              </label>
+              <label>
+                Instrument name
+                <input id="miss-name" name="name" autocomplete="off" placeholder="Weitlaner retractor" />
+              </label>
+              <label class="wide">
+                Description
+                <input id="miss-desc" name="description" autocomplete="off" placeholder="Fills in when the catalog number is known" />
+              </label>
+              <label>
+                Qty ordered
+                <input id="miss-qty" name="quantity" type="number" min="1" step="1" value="1" />
+              </label>
+              <label>
+                Quote #
+                <input id="miss-quote" name="quoteNumber" autocomplete="off" />
+              </label>
+              <label>
+                PO #
+                <input id="miss-po" name="poNumber" autocomplete="off" />
+              </label>
+              <label>
+                Vendor
+                <input id="miss-vendor" name="vendor" autocomplete="off" />
+              </label>
+              <label>
+                Date
+                <input id="miss-date" name="date" type="date" />
+              </label>
+              <label>
+                Status
+                <select id="miss-status" name="status"></select>
+              </label>
+              <label class="wide">
+                Notes
+                <input id="miss-notes" name="notes" autocomplete="off" />
+              </label>
+            </div>
+            <div class="form-actions" style="margin-top: 12px">
+              <button type="submit" id="miss-submit" class="primary">Add to missing list</button>
+              <button type="button" id="miss-clear">Clear form</button>
+            </div>
+            <p id="miss-message" class="message"></p>
+          </form>
+        </div>
+      </section>
+    </main>
+
+    <dialog id="prompt-dialog">
+      <form method="dialog">
+        <h2 id="prompt-title">Needed</h2>
+        <p id="prompt-message"></p>
+        <label>
+          Value
+          <input id="prompt-input" autocomplete="off" />
+        </label>
+        <div class="form-actions" style="margin-top: 14px">
+          <button type="submit" value="ok" class="primary">Save</button>
+          <button type="submit" value="cancel">Cancel</button>
+        </div>
+      </form>
+    </dialog>
+
+    <script src="config.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/google.js"></script>
+    <script src="js/app.js"></script>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+  </body>
+</html>
